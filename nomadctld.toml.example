@@ -1,0 +1,55 @@
+[general]
+hostkey="/etc/ssh/ssh_host_rsa_key"
+#this is the port your docker daemon is listening on
+dockerport="4243"
+#specify the api, if you're using an older docker (1.24 is needed for centos7)
+dockerapi="1.24"
+nomadbinary="/usr/bin/nomad"
+bind=":2222"
+
+#create some aliases
+[alias]
+psp="ps p-"
+psq="ps q-"
+pst="ps t-"
+#the production and quality below must match the nomad.production name
+status="raw production status"
+qstatus="raw quality status"
+
+[nomad]
+[nomad.production]
+url="http://nomad.service.consul:4646"
+#the prefix that production jobs start with, eg p-team1-teamjob
+prefix=["p-"]
+
+[nomad.quality]
+url="http://nomad.service.qconsul:4646"
+#the prefix that quality jobs start with, eg q-team1-teamjob
+#we're running quality and test on the same cluster, so t- also runs here
+prefix=["q-","t-"]
+
+#prefixes are used for acl
+[prefix]
+#create a lnx prefix that has access to jobs starting with "p-","q-","t-"
+#and has access to the "raw" command
+[prefix.lnx]
+prefix=["p-","q-","t-",raw"]
+
+#the team1 prefix has less privileges, it can only see there own jobs
+[prefix.team1]
+prefix=["p-team1-","q-team1-","t-team1-"]
+
+#create some users
+[users]
+[users.wim]
+#key is the public sshkey
+key="ssh-ed25519 ABCEC4NzaC1lZDI2NTE5AADAIB3m1na7Lu74koUa5EYPvEk7xCXiwtToar73gl9w9MND"
+#which prefix can this user access
+prefix=["lnx"]
+name="Wim"
+
+[users.user2]
+key="ssh-ed25519 ABCEC4NzaC1lZDI2NTE5AADAIB3m1na7Lu74koUa5EYPvEk7xCXiwtToar73gl9abcde"
+prefix=["team2"]
+name="user2"
+
