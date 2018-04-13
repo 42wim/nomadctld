@@ -111,7 +111,7 @@ func main() {
 		case "attach":
 			log.Printf("%s running attach on %#v\n", sess.User(), myinfo)
 			status, err = dockerAttach(cfg, sess, myinfo)
-		case "logs":
+		case "logs", "tail":
 			log.Printf("%s running logs on %#v\n", sess.User(), myinfo)
 			status, err = dockerLogs(cfg, sess, myinfo, logsfollow)
 		}
