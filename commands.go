@@ -9,6 +9,7 @@ import (
 	"log"
 	"math"
 	"os/exec"
+	"sort"
 	"strings"
 	"text/tabwriter"
 	"time"
@@ -84,11 +85,17 @@ func isJobAllowed(n *NomadTier, jobID string, prefixes []string) (string, bool) 
 }
 
 func handleCmdPs(sess ssh.Session, cmds []string, n *NomadTier, prefixes []string) {
+	jobs := []string{}
+	for job := range n.jobMap {
+		jobs = append(jobs, job)
+	}
+	sort.Strings(jobs)
 	h := sha1.New()
 	log.Printf("%s is running ps\n", sess.User())
 	w := tabwriter.NewWriter(sess, 0, 0, 1, ' ', tabwriter.Debug)
 	fmt.Fprintf(w, "Exec ID\tJob/Task\tNode\tUptime\tCPU\tMem(max)\n")
-	for job, allocs := range n.jobMap {
+	for _, job := range jobs {
+		allocs := n.jobMap[job]
 		if !hasPrefix(job, prefixes) {
 			continue
 		}
