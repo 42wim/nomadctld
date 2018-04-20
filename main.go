@@ -70,6 +70,16 @@ func main() {
 			case "tail":
 				myinfo = n.shaMap[cmds[1]]
 				logsfollow = true
+			case "rawl":
+				if len(cmds) < 3 {
+					return
+				}
+				switch cmds[2] {
+				case "deployment":
+					handleCmdDeployment(sess, cmds, n, userPrefix)
+				case "status":
+					handleCmdStatus(sess, cmds, n, userPrefix)
+				}
 			case "raw":
 				sess.Exit(handleCmdRaw(sess, cmds, userPrefix))
 				return

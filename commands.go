@@ -38,8 +38,8 @@ func contains(name string, array []string) bool {
 }
 
 func validCmd(sess ssh.Session, cmds []string) bool {
-	allowed := []string{"logs", "ps", "tail", "inspect", "exec", "attach", "stop", "raw"}
-	needarg := []string{"logs", "tail", "inspect", "exec", "attach", "stop", "raw"}
+	allowed := []string{"logs", "ps", "tail", "inspect", "exec", "attach", "stop", "raw", "rawl"}
+	needarg := []string{"logs", "tail", "inspect", "exec", "attach", "stop", "raw", "rawl"}
 	if len(cmds) == 0 {
 		fmt.Fprintf(sess, "Only %v commands supported\n", allowed)
 		return false
@@ -173,6 +173,59 @@ func handleCmdInspect(sess ssh.Session, cmds []string, n *NomadTier, prefixes []
 	res := inspectJob(tier, jobID)
 	fmt.Fprintln(sess, res)
 	return 0
+}
+
+func handleCmdStatus(sess ssh.Session, cmds []string, n *NomadTier, prefixes []string) int {
+	if len(cmds) != 4 {
+		fmt.Fprintln(sess, "Not enough arguments")
+		log.Printf("%s tried to run status %#v\n", sess.User(), cmds)
+		return 1
+	}
+	jobID := cmds[3]
+	if !hasPrefix(jobID, prefixes) {
+		fmt.Fprintf(sess, "Not authorized to inspect %s\n", jobID)
+		log.Printf("%s tried to inspect %s\n", sess.User(), jobID)
+		return 1
+	}
+	cmds[0] = "raw"
+	return handleCmdRaw(sess, cmds, []string{"raw"})
+}
+
+func handleCmdDeployment(sess ssh.Session, cmds []string, n *NomadTier, prefixes []string) int {
+	deployID := cmds[len(cmds)-1]
+	if deploy, ok := n.deployMap[deployID]; ok {
+		fmt.Printf("deploy %#v", deploy)
+		if !hasPrefix(deploy.JobID, prefixes) {
+			fmt.Fprintf(sess, "Not authorized to deployment of %s\n", deploy.JobID)
+			log.Printf("%s tried to %#v\n", sess.User(), cmds)
+			return 1
+		}
+	} else {
+		switch deployID {
+		case "promote", "fail":
+			cmds[0] = "raw"
+			return handleCmdRaw(sess, cmds, []string{"raw"})
+		}
+		fmt.Fprintf(sess, "Non-existing deployment ID %s\n", deployID)
+		log.Printf("%s used non-existing deployment ID %s\n", sess.User(), deployID)
+		return 1
+	}
+
+	if len(cmds) < 5 {
+		fmt.Fprintln(sess, "Not enough arguments")
+		log.Printf("%s tried to run status %#v\n", sess.User(), cmds)
+		return 1
+	}
+
+	switch cmds[3] {
+	case "promote", "fail":
+		cmds[0] = "raw"
+		return handleCmdRaw(sess, cmds, []string{"raw"})
+	}
+
+	fmt.Fprintf(sess, "Invalid command %s\n", cmds[3])
+	log.Printf("%s tried to execute %v\n", sess.User(), cmds)
+	return 1
 }
 
 func handleCmdRaw(sess ssh.Session, cmds []string, prefixes []string) int {

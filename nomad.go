@@ -14,13 +14,14 @@ import (
 type NomadInfo map[string]*NomadTier
 
 type NomadTier struct {
-	Name     string
-	Alias    []string
-	Prefix   []string
-	jobMap   map[string][]*api.AllocationListStub
-	nmap     map[string]*api.Node
-	shaMap   map[string]*AllocInfo
-	allocMap map[string]*api.AllocResourceUsage
+	Name      string
+	Alias     []string
+	Prefix    []string
+	jobMap    map[string][]*api.AllocationListStub
+	nmap      map[string]*api.Node
+	shaMap    map[string]*AllocInfo
+	allocMap  map[string]*api.AllocResourceUsage
+	deployMap map[string]*api.Deployment // key is deployment ID
 	sync.RWMutex
 }
 
@@ -88,7 +89,7 @@ func getNomadInfo() NomadInfo {
 	for tier, nc := range cfg {
 		i[tier] = getNomadTierInfo(tier, nc.URL, nc.Alias, nc.Prefix)
 	}
-	n := &NomadTier{jobMap: make(map[string][]*api.AllocationListStub), nmap: make(map[string]*api.Node), shaMap: make(map[string]*AllocInfo), allocMap: make(map[string]*api.AllocResourceUsage)}
+	n := &NomadTier{jobMap: make(map[string][]*api.AllocationListStub), nmap: make(map[string]*api.Node), shaMap: make(map[string]*AllocInfo), allocMap: make(map[string]*api.AllocResourceUsage), deployMap: make(map[string]*api.Deployment)}
 	i["alles"] = n
 
 	for tier, _ := range cfg {
@@ -104,21 +105,26 @@ func getNomadInfo() NomadInfo {
 		for k, v := range i[tier].allocMap {
 			i["alles"].allocMap[k] = v
 		}
+		for k, v := range i[tier].deployMap {
+			i["alles"].deployMap[k] = v
+		}
 	}
 	return i
 }
 
 func getNomadTierInfo(tier, url string, alias []string, prefix []string) *NomadTier {
 	n := &NomadTier{Name: tier,
-		Alias:    alias,
-		Prefix:   prefix,
-		jobMap:   make(map[string][]*api.AllocationListStub),
-		nmap:     make(map[string]*api.Node),
-		shaMap:   make(map[string]*AllocInfo),
-		allocMap: make(map[string]*api.AllocResourceUsage)}
+		Alias:     alias,
+		Prefix:    prefix,
+		jobMap:    make(map[string][]*api.AllocationListStub),
+		nmap:      make(map[string]*api.Node),
+		shaMap:    make(map[string]*AllocInfo),
+		allocMap:  make(map[string]*api.AllocResourceUsage),
+		deployMap: make(map[string]*api.Deployment)}
 	c, _ := api.NewClient(&api.Config{Address: url})
 	allocs, _, _ := c.Allocations().List(nil)
 	nodes, _, _ := c.Nodes().List(nil)
+	deploys, _, _ := c.Deployments().List(nil)
 
 	// TODO we can go back to stub when running 0.8 which has Address information in the stub
 	// something we should also cache and run every x minute instead on every call
@@ -139,6 +145,10 @@ func getNomadTierInfo(tier, url string, alias []string, prefix []string) *NomadT
 		}(node, n)
 	}
 	wg.Wait()
+
+	for _, deploy := range deploys {
+		n.deployMap[deploy.ID] = deploy
+	}
 
 	for _, alloc := range allocs {
 		if alloc.ClientStatus == "running" {
