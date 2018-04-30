@@ -65,7 +65,7 @@ func main() {
 			case "inspect":
 				sess.Exit(handleCmdInspect(sess, cmds, n, userPrefix))
 				return
-			case "attach", "logs":
+			case "attach", "logs", "di":
 				myinfo = n.shaMap[cmds[1]]
 			case "tail":
 				myinfo = n.shaMap[cmds[1]]
@@ -124,6 +124,9 @@ func main() {
 		case "logs", "tail":
 			log.Printf("%s running logs on %#v\n", sess.User(), myinfo)
 			status, err = dockerLogs(cfg, sess, myinfo, logsfollow)
+		case "di":
+			log.Printf("%s running docker inspect on %#v\n", sess.User(), myinfo)
+			status, err = dockerInspect(cfg, sess, myinfo)
 		}
 		if err != nil {
 			log.Println(err)

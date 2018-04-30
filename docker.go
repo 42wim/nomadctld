@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -246,5 +247,24 @@ func dockerLogs(cfg *container.Config, sess ssh.Session, myinfo *AllocInfo, foll
 	}
 
 	fmt.Println(err)
+	return
+}
+
+func dockerInspect(cfg *container.Config, sess ssh.Session, myinfo *AllocInfo) (status int, err error) {
+	status = 255
+
+	docker, container, ctx, err := dockerConnect(cfg, sess, myinfo)
+	if err != nil {
+		return
+	}
+	_, res, err := docker.ContainerInspectWithRaw(ctx, container.ID, false)
+	if err != nil {
+		log.Println("docker.ContainerInspect: ", err)
+		return
+	}
+	var i interface{}
+	json.Unmarshal(res, &i)
+	res, err = json.MarshalIndent(i, "", "   ")
+	sess.Write(res)
 	return
 }
