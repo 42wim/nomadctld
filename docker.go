@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/docker/docker/api/types"
@@ -298,6 +299,116 @@ func dockerTcpDump(cfg *container.Config, sess ssh.Session, myinfo *AllocInfo) (
 	ch.PidMode = "host"
 	ch.NetworkMode = "host"
 	ch.Binds = []string{"/usr/sbin/tcpdump:/usr/sbin/tcpdump", "/lib64:/lib64", "/etc/passwd:/etc/passwd", "/usr/sbin/ifconfig:/usr/sbin/ifconfig"}
+
+	res2, err := docker.ContainerCreate(ctx, c, ch, nil, "")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	opts := types.ContainerAttachOptions{
+		Stdin:  false,
+		Stdout: cfg.AttachStdout,
+		Stderr: cfg.AttachStderr,
+		Stream: true,
+	}
+
+	stream, err := docker.ContainerAttach(ctx, res2.ID, opts)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer stream.Close()
+
+	outputErr := make(chan error)
+	stdinDone := make(chan struct{})
+	go func() {
+		var err error
+		if cfg.Tty {
+			_, err = io.Copy(sess, stream.Reader)
+		} else {
+			_, err = stdcopy.StdCopy(sess, sess.Stderr(), stream.Reader)
+		}
+		if err != nil {
+			outputErr <- err
+		}
+		close(stdinDone)
+	}()
+
+	go func() {
+		defer stream.CloseWrite()
+		io.Copy(stream.Conn, sess)
+	}()
+
+	err = docker.ContainerStart(ctx, res2.ID, types.ContainerStartOptions{})
+	if err != nil {
+		return
+	}
+
+	defer func() {
+		docker.ContainerRemove(ctx, res2.ID, types.ContainerRemoveOptions{})
+		stream.Close()
+	}()
+
+	if cfg.Tty {
+		_, winCh, _ := sess.Pty()
+		go func() {
+			for win := range winCh {
+				err := docker.ContainerResize(ctx, res2.ID, types.ResizeOptions{
+					Height: uint(win.Height),
+					Width:  uint(win.Width),
+				})
+				if err != nil {
+					log.Println(err)
+					break
+				}
+			}
+		}()
+	}
+	resultC, errC := docker.ContainerWait(ctx, res2.ID, "")
+	select {
+	case <-stdinDone:
+		fmt.Println("STDIN closed")
+		return
+	case err = <-errC:
+		fmt.Println("ERR", err)
+		return
+	case result := <-resultC:
+		fmt.Println("RESULT:", result)
+		status = int(result.StatusCode)
+	}
+	err = <-outputErr
+	return
+}
+
+func dockerIpset(cfg *container.Config, sess ssh.Session, myinfo *AllocInfo) (status int, err error) {
+	status = 255
+
+	docker, cont, ctx, err := dockerConnect(cfg, sess, myinfo)
+	if err != nil {
+		return
+	}
+
+	res, err := docker.ContainerInspect(ctx, cont.ID)
+	if err != nil {
+		log.Println("docker.ContainerInspect: ", err)
+		return
+	}
+
+	ip := res.NetworkSettings.GlobalIPv6Address
+
+	c := &container.Config{}
+	c.Volumes = make(map[string]struct{})
+	c.Cmd = []string{"/bin/bash", "-c", "/usr/sbin/ipset -r list containerports | grep " + ip}
+	c.Tty = true
+	c.Image = "centos:7"
+
+	ch := &container.HostConfig{}
+	ch.Privileged = true
+	ch.UsernsMode = "host"
+	ch.PidMode = "host"
+	ch.NetworkMode = "host"
+	ch.Binds = []string{"/usr/sbin/ipset:/usr/sbin/ipset", "/lib64:/lib64"}
 
 	res2, err := docker.ContainerCreate(ctx, c, ch, nil, "")
 	if err != nil {

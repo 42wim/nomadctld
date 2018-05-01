@@ -38,8 +38,8 @@ func contains(name string, array []string) bool {
 }
 
 func validCmd(sess ssh.Session, cmds []string) bool {
-	allowed := []string{"logs", "ps", "tail", "inspect", "exec", "attach", "stop", "raw", "rawl", "di", "tcpdump"}
-	needarg := []string{"logs", "tail", "inspect", "exec", "attach", "stop", "raw", "rawl", "di", "tcpdump"}
+	allowed := []string{"logs", "ps", "tail", "inspect", "exec", "attach", "stop", "raw", "rawl", "di", "tcpdump", "ipset"}
+	needarg := []string{"logs", "tail", "inspect", "exec", "attach", "stop", "raw", "rawl", "di", "tcpdump", "ipset"}
 	if len(cmds) == 0 {
 		fmt.Fprintf(sess, "Only %v commands supported\n", allowed)
 		return false

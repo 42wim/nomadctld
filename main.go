@@ -65,7 +65,7 @@ func main() {
 			case "inspect":
 				sess.Exit(handleCmdInspect(sess, cmds, n, userPrefix))
 				return
-			case "attach", "logs", "di", "tcpdump":
+			case "attach", "logs", "di", "tcpdump", "ipset":
 				myinfo = n.shaMap[cmds[1]]
 			case "tail":
 				myinfo = n.shaMap[cmds[1]]
@@ -130,6 +130,9 @@ func main() {
 		case "tcpdump":
 			log.Printf("%s running docker tcpdump on %#v\n", sess.User(), myinfo)
 			status, err = dockerTcpDump(cfg, sess, myinfo)
+		case "ipset":
+			log.Printf("%s running docker ipset on %#v\n", sess.User(), myinfo)
+			status, err = dockerIpset(cfg, sess, myinfo)
 		}
 		if err != nil {
 			log.Println(err)
