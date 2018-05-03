@@ -267,3 +267,10 @@ func handleCmdRaw(sess ssh.Session, cmds []string, prefixes []string) int {
 	cmd.Wait()
 	return 0
 }
+
+func handleCmdIpsetAdd(sess ssh.Session, cmds []string) bool {
+	if strings.Contains(cmds[2], ",") && !strings.Contains(cmds[2], " ") {
+		return true
+	}
+	return false
+}
