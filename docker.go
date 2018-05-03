@@ -7,7 +7,6 @@ import (
 	"io"
 	"log"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/docker/docker/api/types"
