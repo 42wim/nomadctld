@@ -61,7 +61,7 @@ func validCmd(sess ssh.Session, cmds []string) bool {
 		fmt.Fprintf(sess, "Only %v commands supported\n", allowed)
 		return false
 	}
-	needtty := []string{"exec", "attach"}
+	needtty := []string{"exec", "attach", "ipset", "tcpdump"}
 	_, _, hasPty := sess.Pty()
 	if contains(cmds[0], needtty) && !hasPty {
 		fmt.Fprintf(sess, "You need a tty, run ssh -t\n")
