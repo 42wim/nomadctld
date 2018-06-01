@@ -31,7 +31,8 @@ func main() {
 		userPrefix := user.Prefix
 		log.Println("prefixes found:", userPrefix)
 		if len(userPrefix) == 0 {
-			log.Println("%s connected with unauthorized key %s", sess.User(), string(authorizedKey))
+			log.Printf("%s connected with unauthorized key %s", sess.User(), string(authorizedKey))
+			fmt.Fprintf("%s connected with unauthorized key %s", sess.User(), string(authorizedKey))
 		}
 
 		var myinfo *AllocInfo
