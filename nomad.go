@@ -60,6 +60,31 @@ func stopJob(tier, jobid string) bool {
 	return true
 }
 
+func restartJob(tier, jobid string) bool {
+	cfg := getNomadConfig()
+	info := cfg[tier]
+	c, _ := api.NewClient(&api.Config{Address: info.URL})
+	job, _, err := c.Jobs().Info(jobid, nil)
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+	res, _, err := c.Jobs().Deregister(jobid, false, nil)
+	if err != nil {
+		log.Println(res, err)
+		return false
+	}
+	stop := false
+	job.Stop = &stop
+	_, _, err = c.Jobs().Register(job, nil)
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+	log.Println(res)
+	return true
+}
+
 func inspectJob(tier, jobid string) string {
 	var jsonHandlePretty = &codec.JsonHandle{
 		HTMLCharsAsIs: true,

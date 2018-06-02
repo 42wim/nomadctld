@@ -63,6 +63,9 @@ func main() {
 			case "stop":
 				sess.Exit(handleCmdStop(sess, cmds, n, userPrefix))
 				return
+			case "restart":
+				sess.Exit(handleCmdRestart(sess, cmds, n, userPrefix))
+				return
 			case "inspect":
 				sess.Exit(handleCmdInspect(sess, cmds, n, userPrefix))
 				return

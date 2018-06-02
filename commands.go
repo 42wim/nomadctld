@@ -38,8 +38,8 @@ func contains(name string, array []string) bool {
 }
 
 func validCmd(sess ssh.Session, cmds []string) bool {
-	allowed := []string{"logs", "ps", "tail", "inspect", "exec", "attach", "stop", "raw", "rawl", "di", "tcpdump", "ipset"}
-	needarg := []string{"logs", "tail", "inspect", "exec", "attach", "stop", "raw", "rawl", "di", "tcpdump", "ipset"}
+	allowed := []string{"logs", "ps", "tail", "inspect", "exec", "attach", "stop", "restart", "raw", "rawl", "di", "tcpdump", "ipset"}
+	needarg := []string{"logs", "tail", "inspect", "exec", "attach", "stop", "restart", "raw", "rawl", "di", "tcpdump", "ipset"}
 	if len(cmds) == 0 {
 		fmt.Fprintf(sess, "Only %v commands supported\n", allowed)
 		return false
@@ -153,6 +153,31 @@ func handleCmdStop(sess ssh.Session, cmds []string, n *NomadTier, prefixes []str
 	}
 	fmt.Fprintf(sess, "Job %s failed to stop\n", jobID)
 	log.Printf("%s stopped %s unsuccesfully", sess.User(), jobID)
+	return 1
+}
+
+func handleCmdRestart(sess ssh.Session, cmds []string, n *NomadTier, prefixes []string) int {
+	jobID := cmds[1]
+	var tier string
+	var ok bool
+	if tier, ok = isJobAllowed(n, jobID, prefixes); !ok {
+		fmt.Fprintf(sess, "Not authorized to restart %s\n", jobID)
+		log.Printf("%s tried to restart %s\n", sess.User(), jobID)
+		return 1
+	}
+	if tier == "" || jobID == "" {
+		fmt.Fprintln(sess, "Invalid job id provided")
+		log.Printf("%s tried to restart %s", sess.User(), jobID)
+		return 1
+	}
+	res := restartJob(tier, jobID)
+	if res {
+		fmt.Fprintf(sess, "Job %s restarted\n", jobID)
+		log.Printf("%s restarted %s succesfully", sess.User(), jobID)
+		return 0
+	}
+	fmt.Fprintf(sess, "Job %s failed to restart\n", jobID)
+	log.Printf("%s restarted %s unsuccesfully", sess.User(), jobID)
 	return 1
 }
 
