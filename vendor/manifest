@@ -3297,6 +3297,14 @@
 			"notests": true
 		},
 		{
+			"importpath": "github.com/xlab/treeprint",
+			"repository": "https://github.com/xlab/treeprint",
+			"vcs": "git",
+			"revision": "505f0eee75dcba5ccb00cf81eea7f5b836b28e7c",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/xordataexchange/crypt/backend",
 			"repository": "https://github.com/xordataexchange/crypt",
 			"vcs": "git",
