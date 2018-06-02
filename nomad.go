@@ -12,6 +12,7 @@ import (
 )
 
 type NomadInfo map[string]*NomadTier
+type TaskGroupMap map[string][]*api.AllocationListStub
 
 type NomadTier struct {
 	Name      string

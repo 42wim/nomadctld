@@ -17,6 +17,7 @@ import (
 	humanize "github.com/dustin/go-humanize"
 	"github.com/gliderlabs/ssh"
 	"github.com/spf13/viper"
+	"github.com/xlab/treeprint"
 )
 
 func hasPrefix(name string, prefixes []string) bool {
@@ -38,7 +39,7 @@ func contains(name string, array []string) bool {
 }
 
 func validCmd(sess ssh.Session, cmds []string) bool {
-	allowed := []string{"logs", "ps", "tail", "inspect", "exec", "attach", "stop", "restart", "raw", "rawl", "di", "tcpdump", "ipset"}
+	allowed := []string{"logs", "ps", "tail", "inspect", "exec", "attach", "stop", "restart", "pstree", "raw", "rawl", "di", "tcpdump", "ipset"}
 	needarg := []string{"logs", "tail", "inspect", "exec", "attach", "stop", "restart", "raw", "rawl", "di", "tcpdump", "ipset"}
 	if len(cmds) == 0 {
 		fmt.Fprintf(sess, "Only %v commands supported\n", allowed)
@@ -115,6 +116,45 @@ func handleCmdPs(sess ssh.Session, cmds []string, n *NomadTier, prefixes []strin
 		}
 	}
 	w.Flush()
+}
+
+func handleCmdPsTree(sess ssh.Session, cmds []string, n *NomadTier, prefixes []string) {
+	jobs := []string{}
+	for job := range n.jobMap {
+		jobs = append(jobs, job)
+	}
+	sort.Strings(jobs)
+	h := sha1.New()
+	log.Printf("%s is running pstree\n", sess.User())
+	tree := treeprint.New()
+	for _, job := range jobs {
+		allocs := n.jobMap[job]
+		if !hasPrefix(job, prefixes) {
+			continue
+		}
+		if len(cmds) > 1 {
+			if !strings.Contains(job, cmds[1]) {
+				continue
+			}
+		}
+		tjob := tree.AddBranch(job)
+		tgMap := make(TaskGroupMap)
+		for _, alloc := range allocs {
+			tgMap[alloc.TaskGroup] = append(tgMap[alloc.TaskGroup], alloc)
+		}
+		for tg, allocs := range tgMap {
+			ttg := tjob.AddBranch(tg)
+			for _, alloc := range allocs {
+				for task, _ := range alloc.TaskStates {
+					h.Write([]byte(task + alloc.ID))
+					hash := hex.EncodeToString(h.Sum(nil))[0:10]
+					h.Reset()
+					ttg.AddMetaNode(hash, fmt.Sprintf("%v (%v) %v", task, humanize.Time(time.Unix(0, alloc.ModifyTime)), humanize.IBytes(n.allocMap[alloc.ID].ResourceUsage.MemoryStats.MaxUsage)))
+				}
+			}
+		}
+	}
+	fmt.Fprintln(sess, tree.String())
 }
 
 func handleCmdExec(sess ssh.Session, cmds []string, n *NomadTier) *AllocInfo {
