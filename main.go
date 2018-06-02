@@ -32,7 +32,7 @@ func main() {
 		log.Println("prefixes found:", userPrefix)
 		if len(userPrefix) == 0 {
 			log.Printf("%s connected with unauthorized key %s", sess.User(), string(authorizedKey))
-			fmt.Fprintf("%s connected with unauthorized key %s", sess.User(), string(authorizedKey))
+			fmt.Fprintf(sess, "%s connected with unauthorized key %s", sess.User(), string(authorizedKey))
 		}
 
 		var myinfo *AllocInfo
