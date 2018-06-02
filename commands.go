@@ -197,7 +197,12 @@ func handleCmdStop(sess ssh.Session, cmds []string, n *NomadTier, prefixes []str
 }
 
 func handleCmdRestart(sess ssh.Session, cmds []string, n *NomadTier, prefixes []string) int {
-	jobID := cmds[1]
+	j := strings.Split(cmds[1], "/")
+	group := ""
+	jobID := j[0]
+	if len(j) == 2 {
+		group = j[1]
+	}
 	var tier string
 	var ok bool
 	if tier, ok = isJobAllowed(n, jobID, prefixes); !ok {
@@ -210,14 +215,21 @@ func handleCmdRestart(sess ssh.Session, cmds []string, n *NomadTier, prefixes []
 		log.Printf("%s tried to restart %s", sess.User(), jobID)
 		return 1
 	}
-	res := restartJob(tier, jobID)
+	kind := "Job"
+	res := false
+	if group != "" {
+		res = restartTaskGroup(tier, jobID, group)
+		kind = "Taskgroup"
+	} else {
+		res = restartJob(tier, jobID)
+	}
 	if res {
-		fmt.Fprintf(sess, "Job %s restarted\n", jobID)
-		log.Printf("%s restarted %s succesfully", sess.User(), jobID)
+		fmt.Fprintf(sess, "%s %s restarted\n", kind, cmds[1])
+		log.Printf("%s restarted %s succesfully", sess.User(), cmds[1])
 		return 0
 	}
-	fmt.Fprintf(sess, "Job %s failed to restart\n", jobID)
-	log.Printf("%s restarted %s unsuccesfully", sess.User(), jobID)
+	fmt.Fprintf(sess, "%s %s failed to restart\n", kind, cmds[1])
+	log.Printf("%s restarted %s unsuccesfully", sess.User(), cmds[1])
 	return 1
 }
 

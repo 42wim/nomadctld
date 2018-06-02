@@ -86,6 +86,41 @@ func restartJob(tier, jobid string) bool {
 	return true
 }
 
+func restartTaskGroup(tier, jobid string, group string) bool {
+	cfg := getNomadConfig()
+	info := cfg[tier]
+	c, _ := api.NewClient(&api.Config{Address: info.URL})
+	job, _, err := c.Jobs().Info(jobid, nil)
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+
+	for _, tg := range job.TaskGroups {
+		if *tg.Name == group {
+			prev := tg.Count
+
+			tg.Count = new(int)
+			_, _, err := c.Jobs().Register(job, nil)
+			if err != nil {
+				log.Println(err)
+				return false
+			}
+
+			// set to previous value
+			tg.Count = prev
+			_, _, err = c.Jobs().Register(job, nil)
+			if err != nil {
+				log.Println(err)
+				return false
+			}
+			return true
+		}
+	}
+	log.Println(jobid, "/", group, "not found")
+	return false
+}
+
 func inspectJob(tier, jobid string) string {
 	var jsonHandlePretty = &codec.JsonHandle{
 		HTMLCharsAsIs: true,
