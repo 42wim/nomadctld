@@ -15,25 +15,20 @@ import (
 func main() {
 	readconfig()
 	ssh.Handle(func(sess ssh.Session) {
+		// assertion check
+		if _, ok := sess.Context().Value("founduser").(*UserInfo); !ok {
+			sess.Exit(1)
+			return
+		}
+		user := sess.Context().Value("founduser").(*UserInfo)
 		logsfollow := false
 		cmds := sess.Command()
 		if !validCmd(sess, cmds) {
 			sess.Exit(1)
 			return
 		}
-		authorizedKey := gossh.MarshalAuthorizedKey(sess.PublicKey())
-		if len(authorizedKey) == 0 {
-			fmt.Fprintf(sess, "Key needed")
-			sess.Exit(1)
-			return
-		}
-		user := checkKey(string(authorizedKey))
 		userPrefix := user.Prefix
 		log.Println("prefixes found:", userPrefix)
-		if len(userPrefix) == 0 {
-			log.Printf("%s connected with unauthorized key %s", sess.User(), string(authorizedKey))
-			fmt.Fprintf(sess, "%s connected with unauthorized key %s", sess.User(), string(authorizedKey))
-		}
 
 		var myinfo *AllocInfo
 		var ni NomadInfo
@@ -160,7 +155,19 @@ func main() {
 	})
 
 	publicKeyOption := ssh.PublicKeyAuth(func(ctx ssh.Context, key ssh.PublicKey) bool {
-		return true // allow all keys
+		// if we have our user, return
+		if ctx.Value("founduser") != nil {
+			return true
+		}
+		log.Println("Connection from", ctx.User(), ctx.RemoteAddr().String(), string(gossh.MarshalAuthorizedKey(key)))
+		authorizedKey := gossh.MarshalAuthorizedKey(key)
+		user := checkKey(string(authorizedKey), ctx.User())
+		// if the user has prefixes we found the correct one
+		if len(user.Prefix) > 0 {
+			ctx.SetValue("founduser", user)
+			return true
+		}
+		return false
 	})
 
 	log.Println("starting ssh server on ", viper.GetString("general.bind"), "Using ", viper.GetString("general.hostkey"))
