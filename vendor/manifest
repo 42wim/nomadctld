@@ -2636,7 +2636,7 @@
 			"importpath": "github.com/hashicorp/nomad/acl",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "acl",
 			"notests": true
@@ -2645,7 +2645,7 @@
 			"importpath": "github.com/hashicorp/nomad/api",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "/api",
 			"notests": true
@@ -2654,7 +2654,7 @@
 			"importpath": "github.com/hashicorp/nomad/helper",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "helper",
 			"notests": true
@@ -2663,7 +2663,7 @@
 			"importpath": "github.com/hashicorp/nomad/nomad/structs",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "nomad/structs",
 			"notests": true
@@ -2672,7 +2672,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/DataDog/datadog-go/statsd",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/DataDog/datadog-go/statsd",
 			"notests": true
@@ -2681,7 +2681,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/StackExchange/wmi",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/StackExchange/wmi",
 			"notests": true
@@ -2690,7 +2690,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/armon/go-metrics",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/armon/go-metrics",
 			"notests": true
@@ -2699,7 +2699,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/beorn7/perks/quantile",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/beorn7/perks/quantile",
 			"notests": true
@@ -2708,7 +2708,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/circonus-labs/circonus-gometrics",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/circonus-labs/circonus-gometrics",
 			"notests": true
@@ -2717,7 +2717,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/circonus-labs/circonusllhist",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/circonus-labs/circonusllhist",
 			"notests": true
@@ -2726,7 +2726,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/fatih/structs",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/fatih/structs",
 			"notests": true
@@ -2735,7 +2735,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/go-ole/go-ole",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/go-ole/go-ole",
 			"notests": true
@@ -2744,7 +2744,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/golang/protobuf/proto",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/golang/protobuf/proto",
 			"notests": true
@@ -2753,7 +2753,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/golang/snappy",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/golang/snappy",
 			"notests": true
@@ -2762,7 +2762,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/gorhill/cronexpr",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/gorhill/cronexpr",
 			"notests": true
@@ -2771,7 +2771,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/hashicorp/consul/api",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/hashicorp/consul/api",
 			"notests": true
@@ -2780,7 +2780,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/hashicorp/errwrap",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/hashicorp/errwrap",
 			"notests": true
@@ -2789,7 +2789,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/hashicorp/go-cleanhttp",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/hashicorp/go-cleanhttp",
 			"notests": true
@@ -2798,7 +2798,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/hashicorp/go-immutable-radix",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/hashicorp/go-immutable-radix",
 			"notests": true
@@ -2807,7 +2807,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/hashicorp/go-msgpack/codec",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/hashicorp/go-msgpack/codec",
 			"notests": true
@@ -2816,7 +2816,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/hashicorp/go-multierror",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/hashicorp/go-multierror",
 			"notests": true
@@ -2825,7 +2825,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/hashicorp/go-retryablehttp",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/hashicorp/go-retryablehttp",
 			"notests": true
@@ -2834,7 +2834,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/hashicorp/go-rootcerts",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/hashicorp/go-rootcerts",
 			"notests": true
@@ -2843,7 +2843,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/hashicorp/go-version",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/hashicorp/go-version",
 			"notests": true
@@ -2852,7 +2852,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/hashicorp/golang-lru",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/hashicorp/golang-lru",
 			"notests": true
@@ -2861,7 +2861,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/hashicorp/hcl",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/hashicorp/hcl",
 			"notests": true
@@ -2870,7 +2870,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/hashicorp/net-rpc-msgpackrpc",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/hashicorp/net-rpc-msgpackrpc",
 			"notests": true
@@ -2879,7 +2879,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/hashicorp/raft",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/hashicorp/raft",
 			"notests": true
@@ -2888,7 +2888,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/hashicorp/serf/coordinate",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/hashicorp/serf/coordinate",
 			"notests": true
@@ -2897,7 +2897,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/hashicorp/vault/api",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/hashicorp/vault/api",
 			"notests": true
@@ -2906,7 +2906,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/hashicorp/vault/helper/compressutil",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/hashicorp/vault/helper/compressutil",
 			"notests": true
@@ -2915,7 +2915,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/hashicorp/vault/helper/jsonutil",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/hashicorp/vault/helper/jsonutil",
 			"notests": true
@@ -2924,7 +2924,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/hashicorp/vault/helper/parseutil",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/hashicorp/vault/helper/parseutil",
 			"notests": true
@@ -2933,7 +2933,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/hashicorp/vault/helper/strutil",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/hashicorp/vault/helper/strutil",
 			"notests": true
@@ -2942,7 +2942,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/hashicorp/yamux",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/hashicorp/yamux",
 			"notests": true
@@ -2951,7 +2951,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/kardianos/osext",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/kardianos/osext",
 			"notests": true
@@ -2960,7 +2960,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/matttproud/golang_protobuf_extensions/pbutil",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/matttproud/golang_protobuf_extensions/pbutil",
 			"notests": true
@@ -2969,7 +2969,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/mitchellh/copystructure",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/mitchellh/copystructure",
 			"notests": true
@@ -2978,7 +2978,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/mitchellh/go-homedir",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/mitchellh/go-homedir",
 			"notests": true
@@ -2987,7 +2987,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/mitchellh/hashstructure",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/mitchellh/hashstructure",
 			"notests": true
@@ -2996,7 +2996,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/mitchellh/mapstructure",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/mitchellh/mapstructure",
 			"notests": true
@@ -3005,7 +3005,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/mitchellh/reflectwalk",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/mitchellh/reflectwalk",
 			"notests": true
@@ -3014,7 +3014,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/prometheus/client_golang/prometheus",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/prometheus/client_golang/prometheus",
 			"notests": true
@@ -3023,7 +3023,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/prometheus/client_model/go",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/prometheus/client_model/go",
 			"notests": true
@@ -3032,7 +3032,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/prometheus/common/expfmt",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/prometheus/common/expfmt",
 			"notests": true
@@ -3041,7 +3041,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/prometheus/common/internal/bitbucket.org/ww/goautoneg",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/prometheus/common/internal/bitbucket.org/ww/goautoneg",
 			"notests": true
@@ -3050,7 +3050,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/prometheus/common/model",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/prometheus/common/model",
 			"notests": true
@@ -3059,7 +3059,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/prometheus/procfs",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/prometheus/procfs",
 			"notests": true
@@ -3068,7 +3068,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/ryanuber/go-glob",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/ryanuber/go-glob",
 			"notests": true
@@ -3077,7 +3077,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/sethgrid/pester",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/sethgrid/pester",
 			"notests": true
@@ -3086,7 +3086,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/shirou/gopsutil/cpu",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/shirou/gopsutil/cpu",
 			"notests": true
@@ -3095,7 +3095,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/shirou/gopsutil/internal/common",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/shirou/gopsutil/internal/common",
 			"notests": true
@@ -3104,7 +3104,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/github.com/ugorji/go/codec",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/github.com/ugorji/go/codec",
 			"notests": true
@@ -3113,7 +3113,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/golang.org/x/crypto/blake2b",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/golang.org/x/crypto/blake2b",
 			"notests": true
@@ -3122,7 +3122,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/golang.org/x/net/http2",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/golang.org/x/net/http2",
 			"notests": true
@@ -3131,7 +3131,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/golang.org/x/net/idna",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/golang.org/x/net/idna",
 			"notests": true
@@ -3140,7 +3140,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/golang.org/x/net/lex/httplex",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/golang.org/x/net/lex/httplex",
 			"notests": true
@@ -3149,7 +3149,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/golang.org/x/sys/unix",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/golang.org/x/sys/unix",
 			"notests": true
@@ -3158,7 +3158,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/golang.org/x/sys/windows",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/golang.org/x/sys/windows",
 			"notests": true
@@ -3167,7 +3167,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/golang.org/x/text/secure/bidirule",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/golang.org/x/text/secure/bidirule",
 			"notests": true
@@ -3176,7 +3176,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/golang.org/x/text/transform",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/golang.org/x/text/transform",
 			"notests": true
@@ -3185,7 +3185,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/golang.org/x/text/unicode/bidi",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/golang.org/x/text/unicode/bidi",
 			"notests": true
@@ -3194,7 +3194,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/golang.org/x/text/unicode/norm",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "32c3193a0c2698f322b87f50c2104e048d1c3393",
+			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
 			"branch": "master",
 			"path": "vendor/golang.org/x/text/unicode/norm",
 			"notests": true
