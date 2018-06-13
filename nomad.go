@@ -19,7 +19,7 @@ type NomadTier struct {
 	Alias     []string
 	Prefix    []string
 	jobMap    map[string][]*api.AllocationListStub
-	nmap      map[string]*api.Node
+	nmap      map[string]*api.NodeListStub
 	shaMap    map[string]*AllocInfo
 	allocMap  map[string]*api.AllocResourceUsage
 	deployMap map[string]*api.Deployment // key is deployment ID
@@ -37,7 +37,7 @@ type AllocInfo struct {
 	Name       string
 	ID         string
 	Command    string
-	Node       *api.Node
+	Node       *api.NodeListStub
 	DockerHost string
 	JobID      string
 	Tier       string
@@ -150,7 +150,7 @@ func getNomadInfo() NomadInfo {
 	for tier, nc := range cfg {
 		i[tier] = getNomadTierInfo(tier, nc.URL, nc.Alias, nc.Prefix)
 	}
-	n := &NomadTier{jobMap: make(map[string][]*api.AllocationListStub), nmap: make(map[string]*api.Node), shaMap: make(map[string]*AllocInfo), allocMap: make(map[string]*api.AllocResourceUsage), deployMap: make(map[string]*api.Deployment)}
+	n := &NomadTier{jobMap: make(map[string][]*api.AllocationListStub), nmap: make(map[string]*api.NodeListStub), shaMap: make(map[string]*AllocInfo), allocMap: make(map[string]*api.AllocResourceUsage), deployMap: make(map[string]*api.Deployment)}
 	i["alles"] = n
 
 	for tier, _ := range cfg {
@@ -178,7 +178,7 @@ func getNomadTierInfo(tier, url string, alias []string, prefix []string) *NomadT
 		Alias:     alias,
 		Prefix:    prefix,
 		jobMap:    make(map[string][]*api.AllocationListStub),
-		nmap:      make(map[string]*api.Node),
+		nmap:      make(map[string]*api.NodeListStub),
 		shaMap:    make(map[string]*AllocInfo),
 		allocMap:  make(map[string]*api.AllocResourceUsage),
 		deployMap: make(map[string]*api.Deployment)}
@@ -187,25 +187,10 @@ func getNomadTierInfo(tier, url string, alias []string, prefix []string) *NomadT
 	nodes, _, _ := c.Nodes().List(nil)
 	deploys, _, _ := c.Deployments().List(nil)
 
-	// TODO we can go back to stub when running 0.8 which has Address information in the stub
-	// something we should also cache and run every x minute instead on every call
 	var wg sync.WaitGroup
 	for _, node := range nodes {
-		wg.Add(1)
-		go func(node *api.NodeListStub, n *NomadTier) {
-			realNode, _, err := c.Nodes().Info(node.ID, nil)
-			if err != nil {
-				log.Println("getNomadTierInfo:", err)
-				wg.Done()
-				return
-			}
-			n.Lock()
-			n.nmap[node.ID] = realNode
-			n.Unlock()
-			wg.Done()
-		}(node, n)
+		n.nmap[node.ID] = node
 	}
-	wg.Wait()
 
 	for _, deploy := range deploys {
 		n.deployMap[deploy.ID] = deploy
@@ -229,7 +214,6 @@ func getNomadTierInfo(tier, url string, alias []string, prefix []string) *NomadT
 		}
 	}
 
-	//var wg sync.WaitGroup
 	for _, allocs := range n.jobMap {
 		for _, alloc := range allocs {
 			wg.Add(1)
@@ -239,7 +223,7 @@ func getNomadTierInfo(tier, url string, alias []string, prefix []string) *NomadT
 					log.Println("realloc", err)
 				}
 				//log.Printf("NODE: %#v\n", n.nmap[alloc.NodeID])
-				c, _ := api.NewClient(&api.Config{Address: "http://" + n.nmap[alloc.NodeID].HTTPAddr})
+				//c, _ := api.NewClient(&api.Config{Address: "http://" + n.nmap[alloc.NodeID].HTTPAddr})
 				stats, err := c.Allocations().Stats(realalloc, nil)
 				if err != nil {
 					log.Println("stats", err)
