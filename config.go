@@ -30,7 +30,7 @@ func readconfig() {
 	})
 }
 
-func checkKey(key string) *UserInfo {
+func checkKey(key string, user string) *UserInfo {
 	ui := &UserInfo{}
 	key = strings.TrimSpace(key)
 	prefixes := []string{}
@@ -38,7 +38,7 @@ func checkKey(key string) *UserInfo {
 	for userID, cfg := range viper.GetStringMap("users") {
 		ccfg := cfg.(map[string]interface{})
 		ukey := ccfg["key"].(string)
-		if ukey == key {
+		if ukey == key && userID == user {
 			ui.ID = userID
 			ui.Key = key
 			ui.Name = ccfg["name"].(string)
