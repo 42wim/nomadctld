@@ -147,11 +147,23 @@ func inspectJob(tier, jobid string) string {
 func getNomadInfo() NomadInfo {
 	i := make(NomadInfo)
 	cfg := getNomadConfig()
+	ntier := make(chan *NomadTier)
 	for tier, nc := range cfg {
-		i[tier] = getNomadTierInfo(tier, nc.URL, nc.Alias, nc.Prefix)
+		go func(tier string, nc *NomadConfig) {
+			ntier <- getNomadTierInfo(tier, nc.URL, nc.Alias, nc.Prefix)
+		}(tier, nc)
 	}
+	for res := range ntier {
+		i[res.Name] = res
+		if len(i) == len(cfg) {
+			break
+		}
+	}
+	close(ntier)
+
 	n := &NomadTier{jobMap: make(map[string][]*api.AllocationListStub), nmap: make(map[string]*api.NodeListStub), shaMap: make(map[string]*AllocInfo), allocMap: make(map[string]*api.AllocResourceUsage), deployMap: make(map[string]*api.Deployment)}
 	i["alles"] = n
+	i["alles"].Name = "alles"
 
 	for tier, _ := range cfg {
 		for k, v := range i[tier].jobMap {

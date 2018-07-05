@@ -51,6 +51,19 @@ func main() {
 
 			switch cmds[0] {
 			case "ps":
+				n = ni["alles"]
+				handleCmdPs(sess, cmds, n, userPrefix)
+				return
+			case "pst":
+				n = ni["test"]
+				handleCmdPs(sess, cmds, n, userPrefix)
+				return
+			case "psq":
+				n = ni["quality"]
+				handleCmdPs(sess, cmds, n, userPrefix)
+				return
+			case "psp":
+				n = ni["production"]
 				handleCmdPs(sess, cmds, n, userPrefix)
 				return
 			case "pstree":

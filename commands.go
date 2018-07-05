@@ -39,7 +39,7 @@ func contains(name string, array []string) bool {
 }
 
 func validCmd(sess ssh.Session, cmds []string) bool {
-	allowed := []string{"logs", "ps", "tail", "inspect", "exec", "attach", "stop", "restart", "pstree", "raw", "rawl", "di", "tcpdump", "ipset"}
+	allowed := []string{"logs", "ps", "tail", "inspect", "exec", "attach", "stop", "restart", "pstree", "raw", "rawl", "di", "tcpdump", "ipset", "psp", "psq", "pst"}
 	needarg := []string{"logs", "tail", "inspect", "exec", "attach", "stop", "restart", "raw", "rawl", "di", "tcpdump", "ipset"}
 	if len(cmds) == 0 {
 		fmt.Fprintf(sess, "Only %v commands supported\n", allowed)
@@ -100,6 +100,10 @@ func handleCmdPs(sess ssh.Session, cmds []string, n *NomadTier, prefixes []strin
 		if !hasPrefix(job, prefixes) {
 			continue
 		}
+		if n.Name != "alles" && !hasPrefix(job, n.Prefix) {
+			continue
+		}
+
 		if len(cmds) > 1 {
 			if !strings.Contains(job, cmds[1]) {
 				continue
