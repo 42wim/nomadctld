@@ -222,12 +222,6 @@ func getNomadTierInfo(tier, url string, alias []string, prefix []string) *NomadT
 			j, _, _ := c.Jobs().Info(jobStub.ID, nil)
 			n.jobMap[jobStub.ID] = j
 		}
-		/*
-				now := time.Now()
-				next, _ := j.Periodic.Next(now)
-				log.Printf("%s %#v %#v %#v\n", job.ID, *j.Periodic.Spec, formatTime(next), formatTimeDifference(now, next, time.Second))
-			}
-		*/
 	}
 
 	for _, deploy := range deploys {
