@@ -39,7 +39,7 @@ func contains(name string, array []string) bool {
 }
 
 func validCmd(sess ssh.Session, cmds []string) bool {
-	allowed := []string{"logs", "ps", "tail", "inspect", "exec", "attach", "stop", "restart", "pstree", "raw", "rawl", "di", "tcpdump", "ipset", "psp", "psq", "pst"}
+	allowed := []string{"logs", "ps", "tail", "inspect", "exec", "attach", "stop", "restart", "pstree", "raw", "rawl", "di", "tcpdump", "ipset", "psp", "psq", "pst", "batch"}
 	needarg := []string{"logs", "tail", "inspect", "exec", "attach", "stop", "restart", "raw", "rawl", "di", "tcpdump", "ipset"}
 	if len(cmds) == 0 {
 		fmt.Fprintf(sess, "Only %v commands supported\n", allowed)
@@ -85,9 +85,38 @@ func isJobAllowed(n *NomadTier, jobID string, prefixes []string) (string, bool) 
 	return tier, true
 }
 
-func handleCmdPs(sess ssh.Session, cmds []string, n *NomadTier, prefixes []string) {
+func handleCmdBatch(sess ssh.Session, cmds []string, n *NomadTier, prefixes []string) {
 	jobs := []string{}
 	for job := range n.jobMap {
+		jobs = append(jobs, job)
+	}
+	sort.Strings(jobs)
+	log.Printf("%s is running batch\n", sess.User())
+	w := tabwriter.NewWriter(sess, 0, 0, 1, ' ', tabwriter.Debug)
+	fmt.Fprintf(w, "Job ID\tNext\t\tConfig\n")
+	for _, job := range jobs {
+		if !hasPrefix(job, prefixes) {
+			continue
+		}
+		if n.Name != "alles" && !hasPrefix(job, n.Prefix) {
+			continue
+		}
+		if len(cmds) > 1 {
+			if !strings.Contains(job, cmds[1]) {
+				continue
+			}
+		}
+		j := n.jobMap[job]
+		now := time.Now()
+		next, _ := j.Periodic.Next(now)
+		fmt.Fprintf(w, "%v\t%v\t%v\t%v\n", job, formatTimeDifference(now, next, time.Second), formatTime(next), *j.Periodic.Spec)
+	}
+	w.Flush()
+}
+
+func handleCmdPs(sess ssh.Session, cmds []string, n *NomadTier, prefixes []string) {
+	jobs := []string{}
+	for job := range n.allocStubMap {
 		jobs = append(jobs, job)
 	}
 	sort.Strings(jobs)
@@ -96,7 +125,7 @@ func handleCmdPs(sess ssh.Session, cmds []string, n *NomadTier, prefixes []strin
 	w := tabwriter.NewWriter(sess, 0, 0, 1, ' ', tabwriter.Debug)
 	fmt.Fprintf(w, "Exec ID\tJob/Task\tNode\tUptime\tCPU\tMem(max)\n")
 	for _, job := range jobs {
-		allocs := n.jobMap[job]
+		allocs := n.allocStubMap[job]
 		if !hasPrefix(job, prefixes) {
 			continue
 		}
@@ -115,7 +144,7 @@ func handleCmdPs(sess ssh.Session, cmds []string, n *NomadTier, prefixes []strin
 				h.Write([]byte(task + alloc.ID))
 				hash := hex.EncodeToString(h.Sum(nil))[0:10]
 				h.Reset()
-				fmt.Fprintf(w, "%v\t%v\t%v\t%v\t%v\t%v(%v)\n", hash, task, n.nmap[alloc.NodeID].Name, humanize.Time(time.Unix(0, alloc.ModifyTime)), math.Floor(n.allocMap[alloc.ID].ResourceUsage.CpuStats.TotalTicks), humanize.IBytes(n.allocMap[alloc.ID].ResourceUsage.MemoryStats.RSS), humanize.IBytes(n.allocMap[alloc.ID].ResourceUsage.MemoryStats.MaxUsage))
+				fmt.Fprintf(w, "%v\t%v\t%v\t%v\t%v\t%v(%v)\n", hash, task, n.nmap[alloc.NodeID].Name, humanize.Time(time.Unix(0, alloc.ModifyTime)), math.Floor(n.statsMap[alloc.ID].ResourceUsage.CpuStats.TotalTicks), humanize.IBytes(n.statsMap[alloc.ID].ResourceUsage.MemoryStats.RSS), humanize.IBytes(n.statsMap[alloc.ID].ResourceUsage.MemoryStats.MaxUsage))
 			}
 		}
 	}
@@ -124,7 +153,7 @@ func handleCmdPs(sess ssh.Session, cmds []string, n *NomadTier, prefixes []strin
 
 func handleCmdPsTree(sess ssh.Session, cmds []string, n *NomadTier, prefixes []string) {
 	jobs := []string{}
-	for job := range n.jobMap {
+	for job := range n.allocStubMap {
 		jobs = append(jobs, job)
 	}
 	sort.Strings(jobs)
@@ -132,7 +161,7 @@ func handleCmdPsTree(sess ssh.Session, cmds []string, n *NomadTier, prefixes []s
 	log.Printf("%s is running pstree\n", sess.User())
 	tree := treeprint.New()
 	for _, job := range jobs {
-		allocs := n.jobMap[job]
+		allocs := n.allocStubMap[job]
 		if !hasPrefix(job, prefixes) {
 			continue
 		}
@@ -153,7 +182,7 @@ func handleCmdPsTree(sess ssh.Session, cmds []string, n *NomadTier, prefixes []s
 					h.Write([]byte(task + alloc.ID))
 					hash := hex.EncodeToString(h.Sum(nil))[0:10]
 					h.Reset()
-					ttg.AddMetaNode(hash, fmt.Sprintf("%v (%v) %v", task, humanize.Time(time.Unix(0, alloc.ModifyTime)), humanize.IBytes(n.allocMap[alloc.ID].ResourceUsage.MemoryStats.MaxUsage)))
+					ttg.AddMetaNode(hash, fmt.Sprintf("%v (%v) %v", task, humanize.Time(time.Unix(0, alloc.ModifyTime)), humanize.IBytes(n.statsMap[alloc.ID].ResourceUsage.MemoryStats.MaxUsage)))
 				}
 			}
 		}

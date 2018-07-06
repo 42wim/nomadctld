@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"log"
 	"sync"
+	"time"
 
 	"github.com/hashicorp/nomad/api"
 	"github.com/ugorji/go/codec"
@@ -15,14 +16,16 @@ type NomadInfo map[string]*NomadTier
 type TaskGroupMap map[string][]*api.AllocationListStub
 
 type NomadTier struct {
-	Name      string
-	Alias     []string
-	Prefix    []string
-	jobMap    map[string][]*api.AllocationListStub
-	nmap      map[string]*api.NodeListStub
-	shaMap    map[string]*AllocInfo
-	allocMap  map[string]*api.AllocResourceUsage
-	deployMap map[string]*api.Deployment // key is deployment ID
+	Name         string
+	Alias        []string
+	Prefix       []string
+	allocStubMap map[string][]*api.AllocationListStub
+	jobStubMap   map[string]*api.JobListStub
+	jobMap       map[string]*api.Job
+	nmap         map[string]*api.NodeListStub
+	shaMap       map[string]*AllocInfo
+	statsMap     map[string]*api.AllocResourceUsage
+	deployMap    map[string]*api.Deployment // key is deployment ID
 	sync.RWMutex
 }
 
@@ -161,11 +164,17 @@ func getNomadInfo() NomadInfo {
 	}
 	close(ntier)
 
-	n := &NomadTier{jobMap: make(map[string][]*api.AllocationListStub), nmap: make(map[string]*api.NodeListStub), shaMap: make(map[string]*AllocInfo), allocMap: make(map[string]*api.AllocResourceUsage), deployMap: make(map[string]*api.Deployment)}
+	n := &NomadTier{allocStubMap: make(map[string][]*api.AllocationListStub), jobStubMap: make(map[string]*api.JobListStub), jobMap: make(map[string]*api.Job), nmap: make(map[string]*api.NodeListStub), shaMap: make(map[string]*AllocInfo), statsMap: make(map[string]*api.AllocResourceUsage), deployMap: make(map[string]*api.Deployment)}
 	i["alles"] = n
 	i["alles"].Name = "alles"
 
 	for tier, _ := range cfg {
+		for k, v := range i[tier].allocStubMap {
+			i["alles"].allocStubMap[k] = v
+		}
+		for k, v := range i[tier].jobStubMap {
+			i["alles"].jobStubMap[k] = v
+		}
 		for k, v := range i[tier].jobMap {
 			i["alles"].jobMap[k] = v
 		}
@@ -175,8 +184,8 @@ func getNomadInfo() NomadInfo {
 		for k, v := range i[tier].shaMap {
 			i["alles"].shaMap[k] = v
 		}
-		for k, v := range i[tier].allocMap {
-			i["alles"].allocMap[k] = v
+		for k, v := range i[tier].statsMap {
+			i["alles"].statsMap[k] = v
 		}
 		for k, v := range i[tier].deployMap {
 			i["alles"].deployMap[k] = v
@@ -187,21 +196,38 @@ func getNomadInfo() NomadInfo {
 
 func getNomadTierInfo(tier, url string, alias []string, prefix []string) *NomadTier {
 	n := &NomadTier{Name: tier,
-		Alias:     alias,
-		Prefix:    prefix,
-		jobMap:    make(map[string][]*api.AllocationListStub),
-		nmap:      make(map[string]*api.NodeListStub),
-		shaMap:    make(map[string]*AllocInfo),
-		allocMap:  make(map[string]*api.AllocResourceUsage),
-		deployMap: make(map[string]*api.Deployment)}
+		Alias:        alias,
+		Prefix:       prefix,
+		allocStubMap: make(map[string][]*api.AllocationListStub),
+		jobStubMap:   make(map[string]*api.JobListStub),
+		jobMap:       make(map[string]*api.Job),
+		nmap:         make(map[string]*api.NodeListStub),
+		shaMap:       make(map[string]*AllocInfo),
+		statsMap:     make(map[string]*api.AllocResourceUsage),
+		deployMap:    make(map[string]*api.Deployment)}
 	c, _ := api.NewClient(&api.Config{Address: url})
 	allocs, _, _ := c.Allocations().List(nil)
 	nodes, _, _ := c.Nodes().List(nil)
 	deploys, _, _ := c.Deployments().List(nil)
+	jobStubs, _, _ := c.Jobs().List(nil)
 
 	var wg sync.WaitGroup
 	for _, node := range nodes {
 		n.nmap[node.ID] = node
+	}
+
+	for _, jobStub := range jobStubs {
+		n.jobStubMap[jobStub.ID] = jobStub
+		if jobStub.Periodic {
+			j, _, _ := c.Jobs().Info(jobStub.ID, nil)
+			n.jobMap[jobStub.ID] = j
+		}
+		/*
+				now := time.Now()
+				next, _ := j.Periodic.Next(now)
+				log.Printf("%s %#v %#v %#v\n", job.ID, *j.Periodic.Spec, formatTime(next), formatTimeDifference(now, next, time.Second))
+			}
+		*/
 	}
 
 	for _, deploy := range deploys {
@@ -210,12 +236,12 @@ func getNomadTierInfo(tier, url string, alias []string, prefix []string) *NomadT
 
 	for _, alloc := range allocs {
 		if alloc.ClientStatus == "running" {
-			n.jobMap[alloc.JobID] = append(n.jobMap[alloc.JobID], alloc)
+			n.allocStubMap[alloc.JobID] = append(n.allocStubMap[alloc.JobID], alloc)
 		}
 	}
 
 	h := sha1.New()
-	for _, allocs := range n.jobMap {
+	for _, allocs := range n.allocStubMap {
 		for _, alloc := range allocs {
 			for k, _ := range alloc.TaskStates {
 				h.Write([]byte(k + alloc.ID))
@@ -226,7 +252,7 @@ func getNomadTierInfo(tier, url string, alias []string, prefix []string) *NomadT
 		}
 	}
 
-	for _, allocs := range n.jobMap {
+	for _, allocs := range n.allocStubMap {
 		for _, alloc := range allocs {
 			wg.Add(1)
 			go func(alloc *api.AllocationListStub, n *NomadTier) {
@@ -241,7 +267,7 @@ func getNomadTierInfo(tier, url string, alias []string, prefix []string) *NomadT
 					log.Println("stats", err)
 				}
 				n.Lock()
-				n.allocMap[alloc.ID] = stats
+				n.statsMap[alloc.ID] = stats
 				n.Unlock()
 				wg.Done()
 			}(alloc, n)
@@ -259,4 +285,27 @@ func getTierFromJob(job string) string {
 		}
 	}
 	return "unset"
+}
+
+// formatTime formats the time to string based on RFC822
+func formatTime(t time.Time) string {
+	if t.Unix() < 1 {
+		// It's more confusing to display the UNIX epoch or a zero value than nothing
+		return ""
+	}
+	// Return ISO_8601 time format GH-3806
+	return t.Format("2006-01-02T15:04:05Z07:00")
+}
+
+// formatUnixNanoTime is a helper for formatting time for output.
+func formatUnixNanoTime(nano int64) string {
+	t := time.Unix(0, nano)
+	return formatTime(t)
+}
+
+// formatTimeDifference takes two times and determines their duration difference
+// truncating to a passed unit.
+// E.g. formatTimeDifference(first=1m22s33ms, second=1m28s55ms, time.Second) -> 6s
+func formatTimeDifference(first, second time.Time, d time.Duration) string {
+	return second.Truncate(d).Sub(first.Truncate(d)).String()
 }

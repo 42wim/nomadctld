@@ -50,6 +50,10 @@ func main() {
 			}
 
 			switch cmds[0] {
+			case "batch":
+				n = ni["alles"]
+				handleCmdBatch(sess, cmds, n, userPrefix)
+				return
 			case "ps":
 				n = ni["alles"]
 				handleCmdPs(sess, cmds, n, userPrefix)
