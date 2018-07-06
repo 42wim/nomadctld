@@ -347,7 +347,7 @@ func handleCmdRaw(sess ssh.Session, cmds []string, prefixes []string) int {
 	log.Printf("%s is running raw %v", sess.User(), cmds[1:])
 	nc := getNomadConfig()
 	// use specified tier
-	tierURL := nc[cmds[1]].URL
+	tierURL := ""
 	// if we have no tier specified (alles), find the tier from the job
 	// used for nomad status <jobid>
 	if cmds[1] == "alles" {
@@ -357,6 +357,8 @@ func handleCmdRaw(sess ssh.Session, cmds []string, prefixes []string) int {
 				break
 			}
 		}
+	} else {
+		tierURL = nc[cmds[1]].URL
 	}
 	cmd := exec.Command(viper.GetString("general.nomadbinary"), cmds[2:]...)
 	cmd.Env = append(cmd.Env, "NOMAD_ADDR="+tierURL)
