@@ -144,7 +144,14 @@ func handleCmdPs(sess ssh.Session, cmds []string, n *NomadTier, prefixes []strin
 				h.Write([]byte(task + alloc.ID))
 				hash := hex.EncodeToString(h.Sum(nil))[0:10]
 				h.Reset()
-				fmt.Fprintf(w, "%v\t%v\t%v\t%v\t%v\t%v(%v)\n", hash, task, n.nmap[alloc.NodeID].Name, humanize.Time(time.Unix(0, alloc.ModifyTime)), math.Floor(n.statsMap[alloc.ID].ResourceUsage.CpuStats.TotalTicks), humanize.IBytes(n.statsMap[alloc.ID].ResourceUsage.MemoryStats.RSS), humanize.IBytes(n.statsMap[alloc.ID].ResourceUsage.MemoryStats.MaxUsage))
+				s := ""
+				switch alloc.ClientStatus {
+				case "failed":
+					s = "(F)"
+				case "pending":
+					s = "(P)"
+				}
+				fmt.Fprintf(w, "%v\t%v%v\t%v\t%v\t%v\t%v(%v)\n", hash, task, s, n.nmap[alloc.NodeID].Name, humanize.Time(time.Unix(0, alloc.ModifyTime)), math.Floor(n.statsMap[alloc.ID].ResourceUsage.CpuStats.TotalTicks), humanize.IBytes(n.statsMap[alloc.ID].ResourceUsage.MemoryStats.RSS), humanize.IBytes(n.statsMap[alloc.ID].ResourceUsage.MemoryStats.MaxUsage))
 			}
 		}
 	}
