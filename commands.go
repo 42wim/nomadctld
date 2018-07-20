@@ -200,7 +200,7 @@ func handleCmdPsTree(sess ssh.Session, cmds []string, n *NomadTier, prefixes []s
 func handleCmdExec(sess ssh.Session, cmds []string, n *NomadTier) *AllocInfo {
 	myinfo := n.shaMap[cmds[1]]
 	if myinfo == nil {
-		fmt.Fprintln(sess, "No such ExecID found!")
+		fmt.Fprintf(sess, "No such ExecID %s found!\n", cmds[1])
 		return nil
 	}
 	if len(cmds) == 2 {
@@ -221,7 +221,7 @@ func handleCmdStop(sess ssh.Session, cmds []string, n *NomadTier, prefixes []str
 		return 1
 	}
 	if tier == "" || jobID == "" {
-		fmt.Fprintln(sess, "Invalid job id provided")
+		fmt.Fprintf(sess, "Invalid job id provided: %s\n", jobID)
 		log.Printf("%s tried to stop %s", sess.User(), jobID)
 		return 1
 	}
@@ -251,7 +251,7 @@ func handleCmdRestart(sess ssh.Session, cmds []string, n *NomadTier, prefixes []
 		return 1
 	}
 	if tier == "" || jobID == "" {
-		fmt.Fprintln(sess, "Invalid job id provided")
+		fmt.Fprintf(sess, "Invalid job id provided: %s\n", jobID)
 		log.Printf("%s tried to restart %s", sess.User(), jobID)
 		return 1
 	}
@@ -283,7 +283,7 @@ func handleCmdInspect(sess ssh.Session, cmds []string, n *NomadTier, prefixes []
 		return 1
 	}
 	if tier == "" || jobID == "" {
-		fmt.Fprintln(sess, "Invalid job id provided")
+		fmt.Fprintf(sess, "Invalid job id provided: %s\n", jobID)
 		log.Printf("%s tried to inspect %s", sess.User(), jobID)
 		return 1
 	}
