@@ -80,6 +80,7 @@ func restartJob(tier, jobid string) bool {
 	}
 	stop := false
 	job.Stop = &stop
+	time.Sleep(time.Second * 5)
 	_, _, err = c.Jobs().Register(job, nil)
 	if err != nil {
 		log.Println(err)
