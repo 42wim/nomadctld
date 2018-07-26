@@ -146,7 +146,7 @@ func handleCmdInfo(sess ssh.Session, cmds []string, n *NomadTier, prefixes []str
 		//fmt.Fprintf(w, "          \t%s\t                \t       \t  \t\n", job)
 		for _, alloc := range allocs {
 			for task, state := range alloc.TaskStates {
-				fmt.Println(alloc.DeploymentStatus.Healthy)
+				//fmt.Println(alloc.DeploymentStatus.Healthy)
 				h.Write([]byte(task + alloc.ID))
 				hash := hex.EncodeToString(h.Sum(nil))[0:10]
 				h.Reset()
@@ -194,7 +194,19 @@ func handleCmdPs(sess ssh.Session, cmds []string, n *NomadTier, prefixes []strin
 				continue
 			}
 		}
-		fmt.Fprintf(w, "          \t%s\t                \t       \t  \t\t\n", job)
+		deploymentstatus := ""
+		for _, deploy := range n.deployMap {
+			if deploy.JobID == job {
+				if deploy.Status == "failed" {
+					deploymentstatus = "FAIL"
+					break
+				}
+				if deploy.Status == "successful" {
+					deploymentstatus = "OK"
+				}
+			}
+		}
+		fmt.Fprintf(w, "          \t%s %s\t                \t       \t  \t\t\n", job, deploymentstatus)
 		for _, alloc := range allocs {
 			for task, state := range alloc.TaskStates {
 				h.Write([]byte(task + alloc.ID))
