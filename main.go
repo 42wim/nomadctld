@@ -73,6 +73,9 @@ func main() {
 			case "pstree":
 				handleCmdPsTree(sess, cmds, n, userPrefix)
 				return
+			case "info":
+				handleCmdInfo(sess, cmds, n, userPrefix)
+				return
 			case "exec":
 				myinfo = handleCmdExec(sess, cmds, n)
 			case "stop":

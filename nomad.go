@@ -230,7 +230,7 @@ func getNomadTierInfo(tier, url string, alias []string, prefix []string) *NomadT
 	}
 
 	for _, alloc := range allocs {
-		if alloc.ClientStatus == "running" || alloc.ClientStatus == "pending" {
+		if alloc.ClientStatus == "running" || alloc.ClientStatus == "pending" || alloc.ClientStatus == "failed" {
 			n.allocStubMap[alloc.JobID] = append(n.allocStubMap[alloc.JobID], alloc)
 		}
 	}

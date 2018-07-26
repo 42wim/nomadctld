@@ -39,8 +39,8 @@ func contains(name string, array []string) bool {
 }
 
 func validCmd(sess ssh.Session, cmds []string) bool {
-	allowed := []string{"logs", "ps", "tail", "inspect", "exec", "attach", "stop", "restart", "pstree", "raw", "rawl", "di", "tcpdump", "ipset", "psp", "psq", "pst", "batch"}
-	needarg := []string{"logs", "tail", "inspect", "exec", "attach", "stop", "restart", "raw", "rawl", "di", "tcpdump", "ipset"}
+	allowed := []string{"logs", "ps", "tail", "inspect", "exec", "attach", "stop", "restart", "pstree", "info", "raw", "rawl", "di", "tcpdump", "ipset", "psp", "psq", "pst", "batch"}
+	needarg := []string{"logs", "tail", "inspect", "exec", "attach", "stop", "restart", "raw", "rawl", "info", "di", "tcpdump", "ipset"}
 	if len(cmds) == 0 {
 		fmt.Fprintf(sess, "Only %v commands supported\n", allowed)
 		return false
@@ -114,6 +114,62 @@ func handleCmdBatch(sess ssh.Session, cmds []string, n *NomadTier, prefixes []st
 	w.Flush()
 }
 
+func handleCmdInfo(sess ssh.Session, cmds []string, n *NomadTier, prefixes []string) {
+	jobs := []string{}
+	for job := range n.allocStubMap {
+		jobs = append(jobs, job)
+	}
+	sort.Strings(jobs)
+	h := sha1.New()
+	log.Printf("%s is running ps\n", sess.User())
+	//w := tabwriter.NewWriter(sess, 0, 0, 1, ' ', tabwriter.DiscardEmptyColumns)
+	w := tabwriter.NewWriter(sess, 0, 0, 1, ' ', 0)
+	//fmt.Fprintf(w, "Exec ID\tJob/Task\tNode\tUptime\tCPU\tMem(max)\n")
+	//fmt.Fprintf(w, "Exec ID\tJob/Task\tNode\tUptime\tCPU\tMem(max)\n")
+	for _, job := range jobs {
+		if job != cmds[1] {
+			continue
+		}
+		allocs := n.allocStubMap[job]
+		if !hasPrefix(job, prefixes) {
+			continue
+		}
+		if n.Name != "alles" && !hasPrefix(job, n.Prefix) {
+			continue
+		}
+
+		if len(cmds) > 1 {
+			if !strings.Contains(job, cmds[1]) {
+				continue
+			}
+		}
+		//fmt.Fprintf(w, "          \t%s\t                \t       \t  \t\n", job)
+		for _, alloc := range allocs {
+			for task, state := range alloc.TaskStates {
+				fmt.Println(alloc.DeploymentStatus.Healthy)
+				h.Write([]byte(task + alloc.ID))
+				hash := hex.EncodeToString(h.Sum(nil))[0:10]
+				h.Reset()
+				s := ""
+				switch alloc.ClientStatus {
+				case "failed":
+					s = "(F)"
+				case "pending":
+					s = "(P)"
+				}
+				fmt.Println(s)
+				fmt.Fprintf(w, "%v\t|%v\t|%v\t|%v/%v\n", hash, alloc.ClientStatus, humanize.Time(time.Unix(0, alloc.ModifyTime)), alloc.TaskGroup, task)
+				fmt.Fprintf(w, "\t|%v\t|%v Mhz\t|%v(%v)\n", n.nmap[alloc.NodeID].Name, math.Floor(n.statsMap[alloc.ID].ResourceUsage.CpuStats.TotalTicks), humanize.IBytes(n.statsMap[alloc.ID].ResourceUsage.MemoryStats.RSS), humanize.IBytes(n.statsMap[alloc.ID].ResourceUsage.MemoryStats.MaxUsage))
+				for _, event := range state.Events {
+					fmt.Fprintf(w, "\t|%v\t|%v\t|%v\n", humanize.Time(time.Unix(0, event.Time)), event.Type, event.DisplayMessage)
+				}
+				fmt.Fprintln(w, "\t\t\t")
+			}
+		}
+	}
+	w.Flush()
+}
+
 func handleCmdPs(sess ssh.Session, cmds []string, n *NomadTier, prefixes []string) {
 	jobs := []string{}
 	for job := range n.allocStubMap {
@@ -123,7 +179,7 @@ func handleCmdPs(sess ssh.Session, cmds []string, n *NomadTier, prefixes []strin
 	h := sha1.New()
 	log.Printf("%s is running ps\n", sess.User())
 	w := tabwriter.NewWriter(sess, 0, 0, 1, ' ', tabwriter.Debug)
-	fmt.Fprintf(w, "Exec ID\tJob/Task\tNode\tUptime\tCPU\tMem(max)\n")
+	fmt.Fprintf(w, "Exec ID\tJob/Task\tNode\tUptime\tCPU\tMem(max)\tExtra\n")
 	for _, job := range jobs {
 		allocs := n.allocStubMap[job]
 		if !hasPrefix(job, prefixes) {
@@ -138,20 +194,40 @@ func handleCmdPs(sess ssh.Session, cmds []string, n *NomadTier, prefixes []strin
 				continue
 			}
 		}
-		fmt.Fprintf(w, "          \t%s\t                \t       \t  \t\n", job)
+		fmt.Fprintf(w, "          \t%s\t                \t       \t  \t\t\n", job)
 		for _, alloc := range allocs {
-			for task, _ := range alloc.TaskStates {
+			for task, state := range alloc.TaskStates {
 				h.Write([]byte(task + alloc.ID))
 				hash := hex.EncodeToString(h.Sum(nil))[0:10]
 				h.Reset()
 				s := ""
 				switch alloc.ClientStatus {
 				case "failed":
-					s = "(F)"
+					s = "F,"
 				case "pending":
-					s = "(P)"
+					s = "P,"
 				}
-				fmt.Fprintf(w, "%v\t%v%v\t%v\t%v\t%v\t%v(%v)\n", hash, task, s, n.nmap[alloc.NodeID].Name, humanize.Time(time.Unix(0, alloc.ModifyTime)), math.Floor(n.statsMap[alloc.ID].ResourceUsage.CpuStats.TotalTicks), humanize.IBytes(n.statsMap[alloc.ID].ResourceUsage.MemoryStats.RSS), humanize.IBytes(n.statsMap[alloc.ID].ResourceUsage.MemoryStats.MaxUsage))
+				for _, event := range state.Events {
+					switch event.Type {
+					case "Terminated":
+						if strings.Contains(event.DisplayMessage, "OOM") {
+							s += "O,"
+						} else {
+							s += "T,"
+						}
+					case "Not Restarting":
+						s += "NR,"
+					case "Killing":
+						if strings.Contains(event.DisplayMessage, "vault") {
+							s += "KV,"
+						}
+					case "Alloc Unhealthy":
+						s += "U,"
+					}
+				}
+				s = strings.TrimRight(s, ",")
+
+				fmt.Fprintf(w, "%v\t%v\t%v\t%v\t%v\t%v(%v)\t%v\n", hash, task, n.nmap[alloc.NodeID].Name, humanize.Time(time.Unix(0, alloc.ModifyTime)), math.Floor(n.statsMap[alloc.ID].ResourceUsage.CpuStats.TotalTicks), humanize.IBytes(n.statsMap[alloc.ID].ResourceUsage.MemoryStats.RSS), humanize.IBytes(n.statsMap[alloc.ID].ResourceUsage.MemoryStats.MaxUsage), s)
 			}
 		}
 	}
