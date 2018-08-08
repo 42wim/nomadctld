@@ -32,6 +32,7 @@ type NomadTier struct {
 type NomadConfig struct {
 	Name   string
 	URL    string
+	Token  string
 	Alias  []string
 	Prefix []string
 }
@@ -49,7 +50,7 @@ type AllocInfo struct {
 func stopJob(tier, jobid string) bool {
 	cfg := getNomadConfig()
 	info := cfg[tier]
-	c, _ := api.NewClient(&api.Config{Address: info.URL})
+	c, _ := api.NewClient(&api.Config{Address: info.URL, SecretID: info.Token})
 	_, _, err := c.Jobs().Info(jobid, nil)
 	if err != nil {
 		log.Println(err)
@@ -67,7 +68,7 @@ func stopJob(tier, jobid string) bool {
 func restartJob(tier, jobid string) bool {
 	cfg := getNomadConfig()
 	info := cfg[tier]
-	c, _ := api.NewClient(&api.Config{Address: info.URL})
+	c, _ := api.NewClient(&api.Config{Address: info.URL, SecretID: info.Token})
 	job, _, err := c.Jobs().Info(jobid, nil)
 	if err != nil {
 		log.Println(err)
@@ -93,7 +94,7 @@ func restartJob(tier, jobid string) bool {
 func restartTaskGroup(tier, jobid string, group string) bool {
 	cfg := getNomadConfig()
 	info := cfg[tier]
-	c, _ := api.NewClient(&api.Config{Address: info.URL})
+	c, _ := api.NewClient(&api.Config{Address: info.URL, SecretID: info.Token})
 	job, _, err := c.Jobs().Info(jobid, nil)
 	if err != nil {
 		log.Println(err)
@@ -133,7 +134,7 @@ func inspectJob(tier, jobid string) string {
 
 	cfg := getNomadConfig()
 	info := cfg[tier]
-	c, _ := api.NewClient(&api.Config{Address: info.URL})
+	c, _ := api.NewClient(&api.Config{Address: info.URL, SecretID: info.Token})
 	job, _, err := c.Jobs().Info(jobid, nil)
 	if err != nil {
 		log.Println(err)
@@ -154,7 +155,7 @@ func getNomadInfo() NomadInfo {
 	ntier := make(chan *NomadTier)
 	for tier, nc := range cfg {
 		go func(tier string, nc *NomadConfig) {
-			ntier <- getNomadTierInfo(tier, nc.URL, nc.Alias, nc.Prefix)
+			ntier <- getNomadTierInfo(tier, nc.URL, nc.Token, nc.Alias, nc.Prefix)
 		}(tier, nc)
 	}
 	for res := range ntier {
@@ -195,7 +196,7 @@ func getNomadInfo() NomadInfo {
 	return i
 }
 
-func getNomadTierInfo(tier, url string, alias []string, prefix []string) *NomadTier {
+func getNomadTierInfo(tier, url, token string, alias []string, prefix []string) *NomadTier {
 	n := &NomadTier{Name: tier,
 		Alias:        alias,
 		Prefix:       prefix,
@@ -206,11 +207,26 @@ func getNomadTierInfo(tier, url string, alias []string, prefix []string) *NomadT
 		shaMap:       make(map[string]*AllocInfo),
 		statsMap:     make(map[string]*api.AllocResourceUsage),
 		deployMap:    make(map[string]*api.Deployment)}
-	c, _ := api.NewClient(&api.Config{Address: url})
-	allocs, _, _ := c.Allocations().List(nil)
-	nodes, _, _ := c.Nodes().List(nil)
-	deploys, _, _ := c.Deployments().List(nil)
-	jobStubs, _, _ := c.Jobs().List(nil)
+	c, err := api.NewClient(&api.Config{Address: url, SecretID: token})
+	if err != nil {
+		log.Printf("getNomadTierInfo err: %s %#v\n", url, err.Error())
+	}
+	allocs, _, err := c.Allocations().List(nil)
+	if err != nil {
+		log.Printf("getNomadTierInfo allocs err: %s %#v\n", url, err.Error())
+	}
+	nodes, _, err := c.Nodes().List(nil)
+	if err != nil {
+		log.Printf("getNomadTierInfo nodes err: %s %#v\n", url, err.Error())
+	}
+	deploys, _, err := c.Deployments().List(nil)
+	if err != nil {
+		log.Printf("getNomadTierInfo deployments err: %s %#v\n", url, err.Error())
+	}
+	jobStubs, _, err := c.Jobs().List(nil)
+	if err != nil {
+		log.Printf("getNomadTierInfo jobs err: %s %#v\n", url, err.Error())
+	}
 
 	var wg sync.WaitGroup
 	for _, node := range nodes {

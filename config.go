@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"strings"
 
@@ -71,6 +72,7 @@ func getNomadConfig() map[string]*NomadConfig {
 		nc := &NomadConfig{Name: id}
 		res[id] = nc
 		nc.URL = cfg.(map[string]interface{})["url"].(string)
+		nc.Token = getToken(cfg.(map[string]interface{})["token"].(string))
 		if prefixes, ok := cfg.(map[string]interface{})["prefix"].([]interface{}); ok {
 			for _, prefix := range prefixes {
 				nc.Prefix = append(nc.Prefix, prefix.(string))
@@ -83,4 +85,12 @@ func getNomadConfig() map[string]*NomadConfig {
 		}
 	}
 	return res
+}
+
+func getToken(file string) string {
+	data, err := ioutil.ReadFile(file)
+	if err != nil {
+		log.Fatalf("no token found: %v", err)
+	}
+	return strings.TrimSuffix(string(data), "\n")
 }
