@@ -3113,7 +3113,7 @@
 			"importpath": "github.com/hashicorp/nomad/vendor/golang.org/x/crypto/blake2b",
 			"repository": "https://github.com/hashicorp/nomad",
 			"vcs": "git",
-			"revision": "1dce78888f32732be8f021f8b6b99fbc5d221d05",
+			"revision": "08f88eb89fa0c4e6123201fb796dbad4900a36a3",
 			"branch": "master",
 			"path": "vendor/golang.org/x/crypto/blake2b",
 			"notests": true
@@ -3401,6 +3401,15 @@
 			"revision": "b3c676e531a6dc479fa1b35ac961c13f5e2b4d2e",
 			"branch": "master",
 			"path": "/context",
+			"notests": true
+		},
+		{
+			"importpath": "golang.org/x/sys/cpu",
+			"repository": "https://go.googlesource.com/sys",
+			"vcs": "git",
+			"revision": "acbc56fc7007d2a01796d5bde54f39e3b3e95945",
+			"branch": "master",
+			"path": "/cpu",
 			"notests": true
 		},
 		{
