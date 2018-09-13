@@ -443,12 +443,14 @@ func handleCmdRaw(sess ssh.Session, cmds []string, prefixes []string) int {
 	nc := getNomadConfig()
 	// use specified tier
 	tierURL := ""
+	nomadToken := ""
 	// if we have no tier specified (alles), find the tier from the job
 	// used for nomad status <jobid>
 	if cmds[1] == "alles" {
 		for _, v := range nc {
 			if hasPrefix(cmds[3], v.Prefix) {
 				tierURL = v.URL
+				nomadToken = v.Token
 				break
 			}
 		}
@@ -457,7 +459,7 @@ func handleCmdRaw(sess ssh.Session, cmds []string, prefixes []string) int {
 	}
 	cmd := exec.Command(viper.GetString("general.nomadbinary"), cmds[2:]...)
 	cmd.Env = append(cmd.Env, "NOMAD_ADDR="+tierURL)
-	cmd.Env = append(cmd.Env, "NOMAD_TOKEN="+nc[cmds[1]].Token)
+	cmd.Env = append(cmd.Env, "NOMAD_TOKEN="+nomadToken)
 	stderr, err := cmd.StderrPipe()
 	if nil != err {
 		log.Println("Error obtaining stderr: %s", err.Error())
