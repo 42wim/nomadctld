@@ -457,6 +457,7 @@ func handleCmdRaw(sess ssh.Session, cmds []string, prefixes []string) int {
 	}
 	cmd := exec.Command(viper.GetString("general.nomadbinary"), cmds[2:]...)
 	cmd.Env = append(cmd.Env, "NOMAD_ADDR="+tierURL)
+	cmd.Env = append(cmd.Env, "NOMAD_TOKEN="+nc[cmds[1]].Token)
 	stderr, err := cmd.StderrPipe()
 	if nil != err {
 		log.Println("Error obtaining stderr: %s", err.Error())
