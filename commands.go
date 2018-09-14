@@ -107,7 +107,7 @@ func handleCmdBatch(sess ssh.Session, cmds []string, n *NomadTier, prefixes []st
 			}
 		}
 		j := n.jobMap[job]
-		now := time.Now()
+		now := time.Now().UTC()
 		next, _ := j.Periodic.Next(now)
 		fmt.Fprintf(w, "%v\t%v\t%v\t%v\n", job, formatTimeDifference(now, next, time.Second), formatTime(next), *j.Periodic.Spec)
 	}
