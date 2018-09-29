@@ -3,18 +3,21 @@ nomadctld="/usr/bin/ssh -p2222 yourserver"
 if [ "$1" == "" ] || [ "$1" == "help" ]; then
         echo "commands:"
         echo -en "\\tps <filter> (shows all/filtered nomad jobs) (<filter> is optional)\\n"
-        echo -en "\\tpsp <filter> (shows production nomad jobs) (<filter> is optional)\\n"
-        echo -en "\\tpsq <filter> (shows quality nomad jobs) (<filter> is optional)\\n"
-        echo -en "\\tpst <filter> (shows test nomad jobs) (<filter> is optional)\\n"
+        echo -en "\\tbatch <filter> (shows batch nomad jobs) (<filter> is optional)\\n"
         echo -en "\\texec <execID> <command> (executes <command> in container <execID> (command default is /bin/sh)\\n"
         echo -en "\\tlogs <execID> (shows last 100 stdout lines of <execID>)\\n"
         echo -en "\\ttail <execID> (shows last 100 stdout lines of <execID> and keeps following them (like tail -f))\\n"
         echo -en "\\tstop <jobID> (stops a nomad job with <jobID> (<jobID> is the jobname))\\n"
         echo -en "\\tinspect <jobID> (inspects a nomad job with <jobID> (<jobID> is the jobname))\\n"
+        echo -en "\\tstatus <jobID> (shows status of a nomad job with <jobID> (<jobID> is the jobname))\\n"
+        echo -en "\\tdi <execID> (runs equivalent of docker inspect on container <execID>\\n"
+        echo -en "\\trestart <jobID> (restart a job)\\n"
+        echo -en "\\tpstree <filter> (shows all/filtered nomad jobs)\\n"
+        echo -en "\\tinfo <jobID> (shows information about all allocations of the job)\\n"
         echo -en "\\t\\n"
         exit
 fi
-if [[ "$1" =~ ^ps ]]; then
+if [[ "$1" =~ ^ps ]] || [ "$1" == "batch" ]; then
         $nomadctld "$1" "$2"
         exit
 fi

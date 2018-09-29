@@ -1,23 +1,28 @@
 # nomadctld
 
 nomadctld is a ssh server which sits between your users and the nomad cluster.  
-This way you can give users limited access to your nomad cluster and allow them to attach, see logs, tail logs, exec containers they own on the cluster.
-The server you're running nomadctld on needs to have access to all of your nomad nodes (usually on port 4646) and the docker daemon on those same hosts.
+This way you can give users limited access to your nomad cluster and allow them to attach, see logs, tail logs, stop, restart, exec containers they own on the cluster.
+The server you're running nomadctld on needs to have access to your nomad server (usually on port 4646) and the docker daemon on all nomad nodes.
 (TLS is not supported yet)
 
-Still a WIP (works for me)
-
 ## features
+* Support nomad ACL tokens
 * Authenticate users via ssh-keys
 * Authorize users on nomad job prefixes
 * Supports following commands
   * ps <filter> (shows all/filtered nomad jobs) (<filter> is optional)
-  * exec <execID> <command> (executes <command> in container <execID> (command default is /bin/sh)\\n"
-  * logs <execID> (shows last 100 stdout lines of <execID>)\\n"
-  * tail <execID> (shows last 100 stdout lines of <execID> and keeps following them (like tail -f))\\n"
-  * stop <jobID> (stops a nomad job with <jobID> (<jobID> is the jobname))\\n"
-  * inspect <jobID> (inspects a nomad job with <jobID> (<jobID> is the jobname))\\n"
+  * batch <filter> (shows batch nomad jobs) (<filter> is optional)
+  * exec <execID> <command> (executes <command> in container <execID> (command default is /bin/sh)
+  * logs <execID> (shows last 100 stdout lines of <execID>)
+  * tail <execID> (shows last 100 stdout lines of <execID> and keeps following them (like tail -f))
+  * stop <jobID> (stops a nomad job with <jobID> (<jobID> is the jobname))
+  * status <jobID> (shows status of a nomad job with <jobID> (<jobID> is the jobname)
+  * inspect <jobID> (inspects a nomad job with <jobID> (<jobID> is the jobname))
+  * di <execID> (runs equivalent of docker inspect on container <execID>
   * raw <production/quality> <nomad command> (executes a "raw" nomad command (basically talks to the nomad binary))
+  * restart <jobID> (restart a job)
+  * pstree <filter> (shows all/filtered nomad jobs)
+  * info <jobID> (shows information about all allocations of the job)
 
 ## running
 nomadctld looks for a nomadctld.toml in the current directory or in /etc/nomadctld
@@ -59,6 +64,64 @@ sh-4.2# exit
 $
 ```
 
+Show batch jobs
+
+```
+$ nomadctl batch
+Job ID                                           |Next        |                          |Config
+p-es-log-curator                                 |5m24s       |2018-07-12T15:52:00+02:00 |52 6,15,18 * * * *
+p-iss-frontend-sync                              |9m24s       |2018-07-12T15:56:00+02:00 |11/15 * * * * *
+```
+
+
+## debugging examples
+
+If you see a OK or a FAIL next to the job, this means the deployment is OK or has FAILed.
+A deployment can fail even when the containers are running, because of allocations that took too much time to become healthy
+
+### Extra column legend
+
+* F = allocation failed
+* P = allocation pending
+* T = allocation has been terminated
+* O = allocation has been terminated by OOM
+* NR = allocation will not restart
+* KV = allocation has been killed because of vault issues
+* U = allocation is unhealthy (based on consul checks)
+
+### With failures
+```
+Exec ID    |Job/Task                                     |Node      |Uptime        |CPU |Mem(max)          |Extra
+076f1388af |p-lnx-helloworld2                            |p-node-5  |1 hour ago    |0   |0 B(0 B)          |F,KV,U
+30a1e62b4e |p-es-iss-cluster1-frontend                   |p-node-9  |14 hours ago  |4   |1.9 GiB(2.0 GiB)  |O,O,O
+b4eaf79c05 |q-fii-lamp                                   |q-node-11 |1 day ago     |0   |39 MiB(67 MiB)    |U,T
+f3c6ee4200 |q-fii-monitoring-wmsmonitor                  |q-node-11 |17 hours ago  |0   |22 MiB(43 MiB)    |T
+```
+* p-lnx-helloworld2 allocations have failed because of vault issues and the allocation is unhealthy
+* p-es-iss-cluster1-frontend is 3 times terminated because of a OOM issue (but is still running because no F)
+* q-fii-monitoring-wmsmonitor has been terminated once (but is still running because no F)
+* q-fii-lamp been terminated once and is now unhealthy (but is still running because no F)
+
+Further debugging of those failures:
+
+```
+$ nomadctl info p-lnx-helloworld2
+
+076f1388af |failed          |1 hour ago |p-lnx-helloworld2-main/p-lnx-helloworld2
+           |p-node-5        |0 Mhz      |0 B(0 B)
+           |1 hour ago      |Received   |Task received by client
+           |1 hour ago      |Task Setup |Building Task Directory
+           |1 hour ago      |Killing    |vault: server error deriving vault token: Error making API request.
+
+URL: POST https://vault.service.consul:8200/v1/auth/token/create/nomad-cluster
+Code: 400. Errors:
+
+* token policies ([default p-lnx-ros]) must be subset of the role's allowed policies ([default p-es-ro p-lnx-ro])
+           |1 hour ago      |Alloc Unhealthy |Unhealthy because of failed task
+```
+We can see that there is an issue with our vault policy
+
+
 ## example configuration
 ```
 [general]
@@ -72,28 +135,33 @@ bind=":2222"
 
 #create some aliases
 [alias]
-psp="ps p-"
-psq="ps q-"
-pst="ps t-"
-#the production and quality below must match the nomad.production name
-status="raw production status"
-qstatus="raw quality status"
+status="raw alles status"
 
 [nomad]
 [nomad.production]
 url="http://nomad.service.consul:4646"
 #the prefix that production jobs start with, eg p-team1-teamjob
 prefix=["p-"]
+#file containing the nomad acl token with admin privileges
+token="/etc/nomadctld/token-p"
 
 [nomad.quality]
 url="http://nomad.service.qconsul:4646"
 #the prefix that quality jobs start with, eg q-team1-teamjob
 #we're running quality and test on the same cluster, so t- also runs here
-prefix=["q-","t-"]
+prefix=["q-"]
+token="/etc/nomadctld/token-q"
+
+[nomad.test]
+url="http://nomad.service.tconsul:4646"
+#the prefix that test jobs start with, eg t-team1-teamjob
+prefix=["t-"]
+token="/etc/nomadctld/token-t"
+
 
 #prefixes are used for acl
 [prefix]
-#create a lnx prefix that has access to jobs starting with "p-","q-","t-" 
+#create a lnx prefix that has access to jobs starting with "p-","q-","t-"
 #and has access to the "raw" command
 [prefix.lnx]
 prefix=["p-","q-","t-",raw"]
